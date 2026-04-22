@@ -1,0 +1,309 @@
+-- /home/u261509590/domains/askvisa.in/gov_id/2026/01/21/order_22/applicant_1/file_1768987050_697099aa79614.jpeg
+
+-- =========================
+-- Countries
+-- =========================
+CREATE TABLE countries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    country_code VARCHAR(10) NOT NULL UNIQUE,
+    country_name VARCHAR(100) NOT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- Visa Orders
+-- =========================
+CREATE TABLE visa_orders (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    country_id INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    total_amount DECIMAL(10,2),
+    currency VARCHAR(10),
+    payment_status ENUM('pending','paid','failed') DEFAULT 'pending',
+    visa_status ENUM('initiated','in_review','approved','rejected') DEFAULT 'initiated',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (country_id) REFERENCES countries(id)
+);
+
+-- =========================
+-- Applicants
+-- =========================
+CREATE TABLE applicants (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    applicant_no INT NOT NULL,
+    applicant_email VARCHAR(255),
+    applicant_phone VARCHAR(20),
+    visa_status ENUM('draft','submitted','in_review','approved','rejected') DEFAULT 'submitted',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES visa_orders(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_order_applicant (order_id, applicant_no),
+    INDEX idx_applicants_order (order_id)
+);
+
+-- =========================
+-- Country Questions
+-- =========================
+CREATE TABLE country_questions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    country_id INT NOT NULL,
+    label VARCHAR(255) NOT NULL,
+    field_key VARCHAR(100) NOT NULL,
+    field_type ENUM('text','date','number','select','file') NOT NULL,
+    is_required TINYINT(1) DEFAULT 1,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_country_field (country_id, field_key)
+);
+
+-- =========================
+-- Question Options
+-- =========================
+CREATE TABLE question_options (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
+    option_value VARCHAR(100) NOT NULL,
+    option_label VARCHAR(100) NOT NULL,
+    sort_order INT DEFAULT 0,
+    FOREIGN KEY (question_id) REFERENCES country_questions(id) ON DELETE CASCADE
+);
+
+-- =========================
+-- Applicant Answers
+-- =========================
+CREATE TABLE applicant_answers (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    applicant_id BIGINT NOT NULL,
+    question_id INT NOT NULL,
+    answer_type ENUM('text','date','number','select','file') NOT NULL,
+    answer_text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES visa_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (applicant_id) REFERENCES applicants(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES country_questions(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_applicant_question (applicant_id, question_id),
+    INDEX idx_answers_applicant (applicant_id),
+    INDEX idx_answers_question (question_id)
+);
+
+-- =========================
+-- Applicant Files
+-- =========================
+CREATE TABLE applicant_files (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    applicant_id BIGINT NOT NULL,
+    question_id INT NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_type VARCHAR(50),
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES visa_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (applicant_id) REFERENCES applicants(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES country_questions(id) ON DELETE CASCADE,
+    INDEX idx_files_applicant (applicant_id)
+);
+
+-- =========================
+-- Payments
+-- =========================
+CREATE TABLE payments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    provider VARCHAR(50),
+    provider_payment_id VARCHAR(255),
+    amount DECIMAL(10,2),
+    currency VARCHAR(10),
+    status ENUM('pending','success','failed','refunded') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES visa_orders(id) ON DELETE CASCADE,
+    INDEX idx_payments_order (order_id)
+);
+
+-- =====================================================
+-- ========== THAILAND PRE-FILLED DATA =================
+-- =====================================================
+
+-- Insert Thailand country
+INSERT INTO countries (country_code, country_name)
+VALUES ('TH', 'Thailand');
+
+-- Insert all country questions for Thailand
+INSERT INTO country_questions (country_id, label, field_key, field_type, is_required, sort_order)
+VALUES
+(1, 'First Name', 'first_name', 'text', 1, 1),
+(1, 'Last Name', 'last_name', 'text', 1, 2),
+(1, 'Passport Number', 'passport_number', 'text', 1, 3),
+(1, 'Passport Front Image', 'passport_front', 'file', 1, 4),
+(1, 'Passport Back Image', 'passport_back', 'file', 1, 5),
+(1, 'Passport Issuing Country', 'passport_country', 'text', 1, 6),
+(1, 'Passport Issue Date', 'passport_issue_date', 'date', 1, 7),
+(1, 'Passport Expiry Date', 'passport_expiry_date', 'date', 1, 8),
+(1, 'Place of Birth', 'place_of_birth', 'text', 1, 9),
+(1, 'Date of Birth', 'date_of_birth', 'date', 1, 10),
+(1, 'Gender', 'gender', 'select', 1, 11),
+(1, 'Arrival Flight Number', 'arrival_flight', 'text', 1, 12),
+(1, 'Arrival Date in Thailand', 'arrival_date', 'date', 1, 13),
+(1, 'Hotel Name', 'hotel_name', 'text', 1, 14),
+(1, 'Hotel City', 'hotel_city', 'text', 1, 15);
+
+-- Insert options for Gender question (question_id = 11)
+INSERT INTO question_options (question_id, option_value, option_label, sort_order)
+VALUES
+(11, 'male', 'Male', 1),
+(11, 'female', 'Female', 2),
+(11, 'other', 'Other', 3);
+
+-- =====================================================
+-- ========== SINGLE APPLICANT ORDER ==================
+-- =====================================================
+
+-- Insert Visa Order
+INSERT INTO visa_orders (country_id, email, phone, payment_status, visa_status, total_amount, currency)
+VALUES (1, 'rahul.sharma@example.com', '+91-9876543210', 'pending', 'initiated', 2500.00, 'INR');
+
+-- Insert Applicant
+INSERT INTO applicants (order_id, applicant_no, applicant_email, applicant_phone, visa_status)
+VALUES (1, 1, 'rahul.sharma@example.com', '+91-9876543210', 'submitted');
+
+-- Insert Applicant Answers
+INSERT INTO applicant_answers (order_id, applicant_id, question_id, answer_type, answer_text)
+VALUES
+(1, 1, 1, 'text', 'Rahul'),
+(1, 1, 2, 'text', 'Sharma'),
+(1, 1, 3, 'text', 'N12345678'),
+(1, 1, 6, 'text', 'India'),
+(1, 1, 7, 'date', '2019-06-15'),
+(1, 1, 8, 'date', '2029-06-14'),
+(1, 1, 9, 'text', 'New Delhi'),
+(1, 1, 10, 'date', '1995-03-22'),
+(1, 1, 11, 'select', 'male'),
+(1, 1, 12, 'text', 'AI302'),
+(1, 1, 13, 'date', '2026-02-10'),
+(1, 1, 14, 'text', 'Bangkok Palace Hotel'),
+(1, 1, 15, 'text', 'Bangkok');
+
+-- Insert Applicant Files
+INSERT INTO applicant_files (order_id, applicant_id, question_id, file_path, file_type)
+VALUES
+(1, 1, 4, 'uploads/thailand/passport_front_rahul.jpg', 'image/jpeg'),
+(1, 1, 5, 'uploads/thailand/passport_back_rahul.jpg', 'image/jpeg');
+
+-- Optional: Payment
+INSERT INTO payments (order_id, provider, provider_payment_id, amount, currency, status)
+VALUES
+(1, 'razorpay', 'pay_123456789', 2500.00, 'INR', 'success');
+
+-- =====================================================
+-- ========== MULTIPLE APPLICANTS ORDER ===============
+-- =====================================================
+
+-- Insert Visa Order
+INSERT INTO visa_orders (country_id, email, phone, payment_status, visa_status, total_amount, currency)
+VALUES (1, 'group.booking@example.com', '+91-9876543211', 'pending', 'initiated', 5000.00, 'INR');
+
+-- Insert Applicants
+INSERT INTO applicants (order_id, applicant_no, applicant_email, applicant_phone, visa_status)
+VALUES
+(2, 1, 'alice.kumar@example.com', '+91-9876543212', 'submitted'),
+(2, 2, 'bob.singh@example.com', '+91-9876543213', 'submitted');
+
+-- Insert Applicant Answers (Applicant 1: Alice)
+INSERT INTO applicant_answers (order_id, applicant_id, question_id, answer_type, answer_text)
+VALUES
+(2, 2, 1, 'text', 'Alice'),
+(2, 2, 2, 'text', 'Kumar'),
+(2, 2, 3, 'text', 'A12345678'),
+(2, 2, 6, 'text', 'India'),
+(2, 2, 7, 'date', '2020-01-10'),
+(2, 2, 8, 'date', '2030-01-09'),
+(2, 2, 9, 'text', 'Mumbai'),
+(2, 2, 10, 'date', '1998-05-12'),
+(2, 2, 11, 'select', 'female'),
+(2, 2, 12, 'text', 'AI404'),
+(2, 2, 13, 'date', '2026-03-15'),
+(2, 2, 14, 'text', 'Bangkok Grand Hotel'),
+(2, 2, 15, 'text', 'Bangkok');
+
+-- Applicant 1 files
+INSERT INTO applicant_files (order_id, applicant_id, question_id, file_path, file_type)
+VALUES
+(2, 2, 4, 'uploads/thailand/passport_front_alice.jpg', 'image/jpeg'),
+(2, 2, 5, 'uploads/thailand/passport_back_alice.jpg', 'image/jpeg');
+
+-- Insert Applicant Answers (Applicant 2: Bob)
+INSERT INTO applicant_answers (order_id, applicant_id, question_id, answer_type, answer_text)
+VALUES
+(2, 3, 1, 'text', 'Bob'),
+(2, 3, 2, 'text', 'Singh'),
+(2, 3, 3, 'text', 'B98765432'),
+(2, 3, 6, 'text', 'India'),
+(2, 3, 7, 'date', '2018-11-20'),
+(2, 3, 8, 'date', '2028-11-19'),
+(2, 3, 9, 'text', 'Delhi'),
+(2, 3, 10, 'date', '1996-08-23'),
+(2, 3, 11, 'select', 'male'),
+(2, 3, 12, 'text', 'AI405'),
+(2, 3, 13, 'date', '2026-03-15'),
+(2, 3, 14, 'text', 'Bangkok Grand Hotel'),
+(2, 3, 15, 'text', 'Bangkok');
+
+-- Applicant 2 files
+INSERT INTO applicant_files (order_id, applicant_id, question_id, file_path, file_type)
+VALUES
+(2, 3, 4, 'uploads/thailand/passport_front_bob.jpg', 'image/jpeg'),
+(2, 3, 5, 'uploads/thailand/passport_back_bob.jpg', 'image/jpeg');
+
+-- Optional: Payment
+INSERT INTO payments (order_id, provider, provider_payment_id, amount, currency, status)
+VALUES
+(2, 'razorpay', 'pay_987654321', 5000.00, 'INR', 'success');
+
+-- =====================================================
+-- ==========  DB TRIGGERS FOR PAYMENTs  ===============
+-- =====================================================
+
+DELIMITER $$
+
+CREATE TRIGGER trg_payment_insert_update_order_status
+AFTER INSERT ON payments
+FOR EACH ROW
+BEGIN
+    UPDATE visa_orders
+    SET payment_status =
+        CASE NEW.status
+            WHEN 'pending'  THEN 'pending'
+            WHEN 'success'  THEN 'paid'
+            WHEN 'failed'   THEN 'failed'
+            WHEN 'refunded' THEN 'refunded'
+        END
+    WHERE id = NEW.order_id;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_payment_update_update_order_status
+AFTER UPDATE ON payments
+FOR EACH ROW
+BEGIN
+    -- Only update if payment status actually changed
+    IF NEW.status <> OLD.status THEN
+        UPDATE visa_orders
+        SET payment_status =
+            CASE NEW.status
+                WHEN 'pending'  THEN 'pending'
+                WHEN 'success'  THEN 'paid'
+                WHEN 'failed'   THEN 'failed'
+                WHEN 'refunded' THEN 'refunded'
+            END
+        WHERE id = NEW.order_id;
+    END IF;
+END$$
+
+DELIMITER ;

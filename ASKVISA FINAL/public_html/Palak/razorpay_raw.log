@@ -1,0 +1,31 @@
+2026-02-05 11:18:28
+GET: Array
+(
+)
+
+POST: Array
+(
+)
+
+RAW INPUT: {"razorpay_payment_id":"pay_SCQdHJzBVAt1lL","razorpay_order_id":"order_SCQcgh9OPbgHdh","razorpay_signature":"062ea23ef0f682394fc1588f0c882bcfc98696152710838daba7dd36b747d546","order_id":"91","amount":"8300","email":"alsdkfj@gmail.com"}
+HEADERS:
+  Host: localhost:8080
+  Connection: keep-alive
+  Content-Length: 235
+  sec-ch-ua-platform: "Windows"
+  User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+  sec-ch-ua: "Not(A:Brand";v="8", "Chromium";v="144", "Brave";v="144"
+  Content-Type: application/json
+  sec-ch-ua-mobile: ?0
+  Accept: */*
+  Sec-GPC: 1
+  Accept-Language: en-GB,en;q=0.8
+  Origin: http://localhost:8080
+  Sec-Fetch-Site: same-origin
+  Sec-Fetch-Mode: cors
+  Sec-Fetch-Dest: empty
+  Referer: http://localhost:8080/Palak/payment_palak.php?applicants=1&amount=100&order_id=91&country=Thailand&email=alsdkfj%40gmail.com&phone=1234567890
+  Accept-Encoding: gzip, deflate, br, zstd
+  Cookie: username-localhost-8888="2|1:0|10:1767754312|23:username-localhost-8888|196:eyJ1c2VybmFtZSI6ICIwMDA5M2E0NzA5MGQ0ZDMxYWM2NTYzYjQzNzQwNThjYiIsICJuYW1lIjogIkFub255bW91cyBUaHlvbmUiLCAiZGlzcGxheV9uYW1lIjogIkFub255bW91cyBUaHlvbmUiLCAiaW5pdGlhbHMiOiAiQVQiLCAiY29sb3IiOiBudWxsfQ==|4e6db640d2f314ee8e18a07195686b5de5f5770cfc0a69b4115140d51b81624a"; _xsrf=2|f0acd326|757f3baf8ca541e3757224517d15bd7e|1767754312; __stripe_mid=c1fe35bf-e64f-484e-91ae-65de593e2b6e546309; PHPSESSID=ih43t90u1ng8s25p994tca6hjh; rzp_unified_session_id=SCQ6uvJH16WCrF
+=================================
+

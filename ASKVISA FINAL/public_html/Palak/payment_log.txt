@@ -1,0 +1,65 @@
+2026-02-03 12:26:26 - Request: {"razorpay_payment_id":"pay_SBeio0Fnpubmsx","razorpay_order_id":"order_SBeidmRIvV30vO","razorpay_signature":"5eec1aa757b3215f08fa08a13a431631030c2c63e700bb7aecef98a35d5ed11e","order_id":"89","amount":"8300","email":"Primary@gmail.com"}
+Generated: 5eec1aa757b3215f08fa08a13a431631030c2c63e700bb7aecef98a35d5ed11e
+Received: 5eec1aa757b3215f08fa08a13a431631030c2c63e700bb7aecef98a35d5ed11e
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-04 09:24:15 - Request: {"razorpay_payment_id":"pay_SC09VVQTfhH9Oa","razorpay_order_id":"order_SC00X61PufvqX0","razorpay_signature":"55525f1ee5030de616b828114000930c1c01061c33c2947e15d649fdba2be5bd","order_id":"89","amount":"8300","email":"Primary@gmail.com"}
+Generated: 55525f1ee5030de616b828114000930c1c01061c33c2947e15d649fdba2be5bd
+Received: 55525f1ee5030de616b828114000930c1c01061c33c2947e15d649fdba2be5bd
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-04 10:48:38 - Request: {"razorpay_payment_id":"pay_SC1ad27JkatZAn","razorpay_order_id":"order_SC1aIR12HJISJi","razorpay_signature":"f1726f55babbe4e14bf0102396e11b974115463e1d1fe713f326cab6a9f01bd8","order_id":"89","amount":"8300","email":"Primary@gmail.com"}
+Generated: f1726f55babbe4e14bf0102396e11b974115463e1d1fe713f326cab6a9f01bd8
+Received: f1726f55babbe4e14bf0102396e11b974115463e1d1fe713f326cab6a9f01bd8
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-04 10:53:34 - Request: {"razorpay_payment_id":"pay_SC1foA6R5g0UWy","razorpay_order_id":"order_SC1djMgm7bxi74","razorpay_signature":"9d17bdfe3897118ff3a41dad87d421a76ec912404039cce4cd802449515a2478","order_id":"89","amount":"8300","email":"Primary@gmail.com"}
+Generated: 9d17bdfe3897118ff3a41dad87d421a76ec912404039cce4cd802449515a2478
+Received: 9d17bdfe3897118ff3a41dad87d421a76ec912404039cce4cd802449515a2478
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-04 10:57:01 - Request: {"razorpay_payment_id":"pay_SC1jUDfN1bzjkR","razorpay_order_id":"order_SC1jO5wdSavr2S","razorpay_signature":"a68bc095bc87990f970da30ef3c5f60d6cfd04100a17144110684cf5a955de01","order_id":"DEMO_1770198985_5248","amount":"8300","email":""}
+Generated: a68bc095bc87990f970da30ef3c5f60d6cfd04100a17144110684cf5a955de01
+Received: a68bc095bc87990f970da30ef3c5f60d6cfd04100a17144110684cf5a955de01
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-04 11:00:08 - Request: {"razorpay_payment_id":"pay_SC1mfXqhS4XpZC","razorpay_order_id":"order_SC1mQa37MfKIiK","razorpay_signature":"582fdfc08be2e8d5a9f675d4698aba7c7303857e0b1e3a1a65c01282cfd1198f","order_id":"90","amount":"8300","email":"Primary@gmail.com"}
+Generated: 582fdfc08be2e8d5a9f675d4698aba7c7303857e0b1e3a1a65c01282cfd1198f
+Received: 582fdfc08be2e8d5a9f675d4698aba7c7303857e0b1e3a1a65c01282cfd1198f
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-04 11:26:54 - Request: {"razorpay_payment_id":"pay_SC2F3Y04KLb97a","razorpay_order_id":"order_SC2ErKc4ITBS9A","razorpay_signature":"05e8bc009471a03d88a472321f405addfde996920a33f59420f2470e3c4e9779","order_id":"90","amount":"8300","email":"Primary@gmail.com"}
+Generated: 05e8bc009471a03d88a472321f405addfde996920a33f59420f2470e3c4e9779
+Received: 05e8bc009471a03d88a472321f405addfde996920a33f59420f2470e3c4e9779
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-04 11:33:41 - Request: {"razorpay_payment_id":"pay_SC2MDVJhwdbdZW","razorpay_order_id":"order_SC2M0F8arW0GKa","razorpay_signature":"b19e6091c8f2e9b0a58f18f6aa09464e5884e0768ee1d0cb6858c9ff758e30c2","order_id":"90","amount":"8300","email":"Primary@gmail.com"}
+Generated: b19e6091c8f2e9b0a58f18f6aa09464e5884e0768ee1d0cb6858c9ff758e30c2
+Received: b19e6091c8f2e9b0a58f18f6aa09464e5884e0768ee1d0cb6858c9ff758e30c2
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-05 09:42:21 - Request: {"razorpay_payment_id":"pay_SCOzl9fAHTbDUF","razorpay_order_id":"order_SCOzXAeIJrvH5X","razorpay_signature":"06ba2bd2ee57a044cf6af9b6d6b2cdd574f3a95f1c52f1368b6bd88256fe271d","order_id":"91","amount":"8300","email":"alsdkfj@gmail.com"}
+Generated: 06ba2bd2ee57a044cf6af9b6d6b2cdd574f3a95f1c52f1368b6bd88256fe271d
+Received: 06ba2bd2ee57a044cf6af9b6d6b2cdd574f3a95f1c52f1368b6bd88256fe271d
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-05 10:48:10 - Request: {"razorpay_payment_id":"pay_SCQ7H8nQDt8Kyw","razorpay_order_id":"order_SCQ708Jhv1j3dR","razorpay_signature":"b8eb350765b74e845b6c251bb8e005575b3db2dd71e99d78a8f623de74a1fd9b","order_id":"91","amount":"8300","email":"alsdkfj@gmail.com"}
+Generated: b8eb350765b74e845b6c251bb8e005575b3db2dd71e99d78a8f623de74a1fd9b
+Received: b8eb350765b74e845b6c251bb8e005575b3db2dd71e99d78a8f623de74a1fd9b
+Database error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'razorpay_order_id' in 'where clause'
+
+2026-02-05 10:49:43 - Request: {"razorpay_payment_id":"pay_SCQ8ttyJ5yq7LH","razorpay_order_id":"order_SCQ8jt819EWRxV","razorpay_signature":"a0fb9f7fedd53c445492c21ed8efa68d902a5d6ac432df76a2d6d40f2a5540cd","order_id":"91","amount":"8300","email":"alsdkfj@gmail.com"}
+Generated: a0fb9f7fedd53c445492c21ed8efa68d902a5d6ac432df76a2d6d40f2a5540cd
+Received: a0fb9f7fedd53c445492c21ed8efa68d902a5d6ac432df76a2d6d40f2a5540cd
+2026-02-05 10:52:05 - Request: {"razorpay_payment_id":"pay_SCQBPlAoVCiWr1","razorpay_order_id":"order_SCQBE8FUXyVw0L","razorpay_signature":"8bc779167da6dc1dbe2b85fede35819ef523ac051f70d42a3d5e4bee9d089f2b","order_id":"91","amount":"8300","email":"alsdkfj@gmail.com"}
+Generated: 8bc779167da6dc1dbe2b85fede35819ef523ac051f70d42a3d5e4bee9d089f2b
+Received: 8bc779167da6dc1dbe2b85fede35819ef523ac051f70d42a3d5e4bee9d089f2b
+2026-02-05 10:53:14 - Request: {"razorpay_payment_id":"pay_SCQCdhSPdNldMI","razorpay_order_id":"order_SCQCT6ff4SvykV","razorpay_signature":"2f093a755a8b60ec2f20c4879c30586c1e026906346d660a6bc6a1a7d32d9a46","order_id":"91","amount":"8300","email":"alsdkfj@gmail.com"}
+Generated: 2f093a755a8b60ec2f20c4879c30586c1e026906346d660a6bc6a1a7d32d9a46
+Received: 2f093a755a8b60ec2f20c4879c30586c1e026906346d660a6bc6a1a7d32d9a46
+2026-02-05 10:54:09 - Request: {"razorpay_payment_id":"pay_SCQDc2VLWnZvzf","razorpay_order_id":"order_SCQDOsyVxUrSYZ","razorpay_signature":"02474cb80198de467651de1e24498cb391312df35e80fdcafa5e0107c43a1417","order_id":"91","amount":"8300","email":"alsdkfj@gmail.com"}
+Generated: 02474cb80198de467651de1e24498cb391312df35e80fdcafa5e0107c43a1417
+Received: 02474cb80198de467651de1e24498cb391312df35e80fdcafa5e0107c43a1417
+2026-02-05 10:54:52 - Request: {"razorpay_payment_id":"pay_SCQEMPiia48X5p","razorpay_order_id":"order_SCQEAOyAFi8iWM","razorpay_signature":"4e06eac6c295a27d5ac2942e7dc6a50abaae0b4a0110b75743ed325d1239b718","order_id":"91","amount":"8300","email":"alsdkfj@gmail.com"}
+Generated: 4e06eac6c295a27d5ac2942e7dc6a50abaae0b4a0110b75743ed325d1239b718
+Received: 4e06eac6c295a27d5ac2942e7dc6a50abaae0b4a0110b75743ed325d1239b718

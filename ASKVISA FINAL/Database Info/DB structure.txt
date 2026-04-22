@@ -1,0 +1,241 @@
+/home/u261509590/domains/askvisa.in/gov_id/2026/01/21/order_22/applicant_1/file_1768987050_697099aa79614.jpeg
+
+
+SET NAMES utf8mb4;
+SET time_zone = '+00:00';
+
+-- =========================
+-- 1. COUNTRIES
+-- =========================
+CREATE TABLE countries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(10) UNIQUE NOT NULL,       -- TH, VN, ID
+    name VARCHAR(100) NOT NULL,              -- Thailand
+    is_active TINYINT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- 2. VISA ORDERS (ONE CHECKOUT)
+-- =========================
+CREATE TABLE visa_orders (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    country_id INT NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(50),
+    status ENUM('draft','submitted','paid','processing','completed','rejected') DEFAULT 'draft',
+    total_amount DECIMAL(10,2) DEFAULT 0,
+    currency VARCHAR(10) DEFAULT 'INR',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (country_id) REFERENCES countries(id)
+);
+ALTER TABLE visa_orders
+
+CHANGE COLUMN status visa_status
+
+ENUM('draft','submitted','processing','completed','rejected')
+
+DEFAULT 'draft';
+
+
+
+ALTER TABLE visa_orders
+
+ADD COLUMN payment_status
+
+ENUM('unpaid','pending','paid','failed','refunded')
+
+DEFAULT 'unpaid'
+
+AFTER visa_status;
+
+
+
+
+-- =========================
+-- 3. APPLICANTS (MULTIPLE PER ORDER)
+-- =========================
+CREATE TABLE applicants (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    applicant_no INT NOT NULL, -- 1,2,3...
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES visa_orders(id)
+);
+
+ALTER TABLE applicants
+ADD COLUMN email VARCHAR(255) AFTER applicant_no,
+ADD COLUMN phone VARCHAR(50) AFTER email;
+
+-- =========================
+-- 4. QUESTIONS (COUNTRY SPECIFIC)
+-- =========================
+CREATE TABLE country_questions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    country_id INT NOT NULL,
+
+    label VARCHAR(255) NOT NULL,        -- Human readable (shown in UI)
+    field_key VARCHAR(100) NOT NULL,    -- passport_number, dob
+    field_type ENUM('text','date','number','select','file') NOT NULL,
+
+    is_required TINYINT DEFAULT 1,
+    sort_order INT DEFAULT 0,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (country_id) REFERENCES countries(id)
+);
+
+-- =========================
+-- 5. QUESTION OPTIONS (FOR SELECT)
+-- =========================
+CREATE TABLE question_options (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
+    option_value VARCHAR(100) NOT NULL,
+    option_label VARCHAR(100) NOT NULL,
+    sort_order INT DEFAULT 0,
+    FOREIGN KEY (question_id) REFERENCES country_questions(id)
+);
+
+-- =========================
+-- 6. ANSWERS (TEXT / DATE / SELECT)
+-- =========================
+CREATE TABLE applicant_answers (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    applicant_id BIGINT NOT NULL,
+    question_id INT NOT NULL,
+    answer_text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_answer (applicant_id, question_id),
+    FOREIGN KEY (applicant_id) REFERENCES applicants(id),
+    FOREIGN KEY (question_id) REFERENCES country_questions(id)
+);
+
+-- =========================
+-- 7. FILE UPLOADS (DOCUMENTS)
+-- =========================
+CREATE TABLE applicant_files (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    applicant_id BIGINT NOT NULL,
+    question_id INT NOT NULL,
+    file_path TEXT NOT NULL,
+    file_type VARCHAR(50),
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (applicant_id) REFERENCES applicants(id),
+    FOREIGN KEY (question_id) REFERENCES country_questions(id)
+);
+
+-- =========================
+-- 8. PAYMENTS (FOR LATER)
+-- =========================
+CREATE TABLE payments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    provider VARCHAR(50),             -- razorpay, stripe
+    provider_payment_id VARCHAR(255),
+    amount DECIMAL(10,2),
+    currency VARCHAR(10),
+    status ENUM('pending','success','failed','refunded') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES visa_orders(id)
+);
+
+-- =====================================================
+-- ========== THAILAND PRE-FILLED DATA =================
+-- =====================================================
+
+INSERT INTO countries (code, name)
+VALUES ('TH', 'Thailand');
+
+-- QUESTIONS FOR THAILAND TDAC
+INSERT INTO country_questions
+(country_id, label, field_key, field_type, is_required, sort_order)
+VALUES
+(1, 'First Name', 'first_name', 'text', 1, 1),
+(1, 'Last Name', 'last_name', 'text', 1, 2),
+(1, 'Passport Number', 'passport_number', 'text', 1, 3),
+(1, 'Passport Front Image', 'passport_front', 'file', 1, 4),
+(1, 'Passport Back Image', 'passport_back', 'file', 1, 5),
+(1, 'Passport Issuing Country', 'passport_country', 'text', 1, 6),
+(1, 'Passport Issue Date', 'passport_issue_date', 'date', 1, 7),
+(1, 'Passport Expiry Date', 'passport_expiry_date', 'date', 1, 8),
+(1, 'Place of Birth', 'place_of_birth', 'text', 1, 9),
+(1, 'Date of Birth', 'date_of_birth', 'date', 1, 10),
+(1, 'Gender', 'gender', 'select', 1, 11),
+(1, 'Arrival Flight Number', 'arrival_flight', 'text', 1, 12),
+(1, 'Arrival Date in Thailand', 'arrival_date', 'date', 1, 13),
+(1, 'Hotel Name', 'hotel_name', 'text', 1, 14),
+(1, 'Hotel City', 'hotel_city', 'text', 1, 15);
+
+-- OPTIONS FOR GENDER
+INSERT INTO question_options (question_id, option_value, option_label, sort_order)
+VALUES
+(11, 'male', 'Male', 1),
+(11, 'female', 'Female', 2),
+(11, 'other', 'Other', 3);
+
+-- =====================================================
+-- ==========  ADD SINGLE PERSON DATA  =================
+-- =====================================================
+
+INSERT INTO visa_orders
+(country_id, email, phone, status, total_amount, currency)
+VALUES
+(1, 'rahul.sharma@example.com', '+91-9876543210', 'submitted', 2500.00, 'INR');
+
+INSERT INTO applicants
+(order_id, applicant_no, email, phone)
+VALUES
+(1, 1, 'rahul.sharma@example.com', '+91-9876543210');
+
+INSERT INTO applicant_answers
+(applicant_id, question_id, answer_text)
+VALUES
+-- First Name
+(1, 1, 'Rahul'),
+
+-- Last Name
+(1, 2, 'Sharma'),
+
+-- Passport Number
+(1, 3, 'N12345678'),
+
+-- Passport Issuing Country
+(1, 6, 'India'),
+
+-- Passport Issue Date
+(1, 7, '2019-06-15'),
+
+-- Passport Expiry Date
+(1, 8, '2029-06-14'),
+
+-- Place of Birth
+(1, 9, 'New Delhi'),
+
+-- Date of Birth
+(1, 10, '1995-03-22'),
+
+-- Gender (select)
+(1, 11, 'male'),
+
+-- Arrival Flight Number
+(1, 12, 'AI302'),
+
+-- Arrival Date
+(1, 13, '2026-02-10'),
+
+-- Hotel Name
+(1, 14, 'Bangkok Palace Hotel'),
+
+-- Hotel City
+(1, 15, 'Bangkok');
+
+INSERT INTO applicant_files
+(applicant_id, question_id, file_path, file_type)
+VALUES
+-- Passport Front
+(1, 4, 'uploads/thailand/passport_front_rahul.jpg', 'image/jpeg'),
+
+-- Passport Back
+(1, 5, 'uploads/thailand/passport_back_rahul.jpg', 'image/jpeg');

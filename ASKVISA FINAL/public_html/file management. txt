@@ -1,0 +1,70 @@
+On Hostinger (and most CPanel/LSCache environments), your public_html and gov_id folders usually sit side-by-side in the root directory.
+
+To save files there, you must use the absolute server path to move the file, but since that folder is "above" public_html, it is not accessible via a standard browser URL.
+
+Here is how you handle both the saving and the viewing:
+
+1. The PHP Logic Update
+You need to define two paths: one for the server to move the file (PATH) and one for the browser to "see" it. Since browsers cannot go above public_html, we will use a small "viewer" trick.
+
+Replace your current upload block with this:
+
+PHP
+
+if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+    // 1. Define the absolute path to gov_id (one level up from public_html)
+    $server_root = dirname(__DIR__); // Goes from public_html/project to public_html, then to root
+    $upload_dir = $server_root . '/gov_id/'; 
+    
+    if (!is_dir($upload_dir)) mkdir($upload_dir, 0775, true);
+
+    $filename = time() . '_' . $_FILES['image']['name'];
+    $target = $upload_dir . $filename;
+
+    if (move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
+        // 2. Store a reference that we can use to fetch the file later
+        // We store the filename only, or a relative indicator
+        $img_path = 'fetch_file.php?name=' . urlencode($filename); 
+    }
+}
+2. The "Viewer" Script (fetch_file.php)
+Since gov_id is private (outside public_html), your <img> tags will break if you point them there directly. Create a file named fetch_file.php inside your public_html folder:
+
+PHP
+
+<?php
+session_start();
+// Security: Only allow logged-in users or active sessions to view
+if (!isset($_SESSION['step'])) exit; 
+
+$filename = $_GET['name'] ?? '';
+$path = dirname(__DIR__) . '/gov_id/' . basename($filename);
+
+if (file_exists($path)) {
+    $mime = mime_content_type($path);
+    header("Content-Type: $mime");
+    readfile($path);
+    exit;
+}
+?>
+3. Folder Permissions on Hostinger
+For this to work, the gov_id folder needs to allow the webserver to write to it.
+
+Log into your Hostinger HPanel.
+
+Go to File Manager.
+
+Right-click the gov_id folder.
+
+Select Permissions.
+
+Ensure it is set to 755 (or 775 if 755 fails).
+
+Summary of the Flow
+Storage: The file moves to .../gov_id/image.jpg (Safe from public browsing).
+
+Database/Session: The path is stored as fetch_file.php?name=image.jpg.
+
+Display: When the chat renders <img src="fetch_file.php?name=image.jpg">, the viewer script grabs the file from the private folder and serves it safely.
+
+Would you like me to integrate the fetch_file.php logic directly into your main code so you only have one file to manage?

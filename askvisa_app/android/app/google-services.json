@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "418276681194",
+    "project_id": "askvisa-4383c",
+    "storage_bucket": "askvisa-4383c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418276681194:android:cef9aaf997388a28417e93",
+        "android_client_info": {
+          "package_name": "com.askvisa.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8ex1Aa-JmkNwCkq8I7jNiZ7GpCXe2l_s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,20 @@
+Applicant Answers Schema:
+CREATE TABLE `applicant_answers` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `order_id` bigint(20) NOT NULL,
+  `applicant_id` bigint(20) NOT NULL,
+  `question_id` int(11) NOT NULL,
+  `answer_type` enum('text','date','number','select','file') NOT NULL,
+  `answer_text` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_applicant_question` (`applicant_id`,`question_id`),
+  KEY `order_id` (`order_id`),
+  KEY `idx_answers_applicant` (`applicant_id`),
+  KEY `idx_answers_question` (`question_id`),
+  CONSTRAINT `applicant_answers_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `visa_orders` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `applicant_answers_ibfk_2` FOREIGN KEY (`applicant_id`) REFERENCES `applicants` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `applicant_answers_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `country_questions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=391 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+Error B: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'ask_visa_local.uploaded_files' doesn't exist

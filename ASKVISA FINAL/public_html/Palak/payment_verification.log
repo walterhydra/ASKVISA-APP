@@ -1,0 +1,78 @@
+2026-02-05 10:59:38 === Verification Started ===
+INFO: Received payment:  for order: 
+ERROR: Missing razorpay_payment_id
+2026-02-05 11:02:27 === Verification Started ===
+INFO: Received payment:  for order: 
+ERROR: Missing razorpay_payment_id
+2026-02-05 11:06:42 === Verification Started ===
+INFO: Received payment:  for order: 
+ERROR: Missing provider_payment_id
+2026-02-05 11:15:33 === Verification Started ===
+INFO: Received payment:  for order: 
+ERROR: Missing razorpay_payment_id
+2026-02-05 11:21:00 === Verification Started ===
+INFO: Received payment:  for order: 
+ERROR: Missing razorpay_payment_id
+2026-02-05 11:22:56 === Verification Started ===
+INFO: Received payment: pay_SCQhzzpUjXlEXU for order: 91
+INFO: Generated signature: 143e0eaed2daf071662a...
+INFO: Received signature: 143e0eaed2daf071662a...
+INFO: Signature verified successfully
+ERROR: Database connection failed
+2026-02-05 11:23:48 === Verification Started ===
+INFO: Received payment: pay_SCQiw6TFD795iT for order: 91
+INFO: Generated signature: 92ae945cfc69963c3724...
+INFO: Received signature: 92ae945cfc69963c3724...
+INFO: Signature verified successfully
+INFO: Updated visa_orders for order #91
+INFO: Inserted payment record #26
+ERROR: Payment verification failed: Encryption key must be 32 bytes (256 bits)
+2026-02-05 11:27:10 === Verification Started ===
+INFO: Received payment: pay_SCQmTJDmmNCCwQ for order: 91
+INFO: Generated signature: 27ca2ce8ce5918df6b8c...
+INFO: Received signature: 27ca2ce8ce5918df6b8c...
+INFO: Signature verified successfully
+INFO: Updated visa_orders for order #91
+INFO: Inserted payment record #27
+ERROR: Payment verification failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'encrypted_payment_id' in 'field list'
+2026-02-05 11:29:04 === Verification Started ===
+INFO: Received payment: pay_SCQoTZ3YPuWCbx for order: 91
+INFO: Generated signature: f30a944847b19cd766a9...
+INFO: Received signature: f30a944847b19cd766a9...
+INFO: Signature verified successfully
+INFO: Updated visa_orders for order #91
+INFO: Inserted payment record #28
+ERROR: Payment verification failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'encrypted_payment_id' in 'field list'
+2026-02-05 11:32:20 === Verification Started ===
+INFO: Received payment: pay_SCQrqbFSyZdgyp for order: 91
+INFO: Generated signature: 4788a109d604d5ea793b...
+INFO: Received signature: 4788a109d604d5ea793b...
+INFO: Signature verified successfully
+INFO: Updated visa_orders for order #91
+INFO: Inserted payment record #29
+INFO: Payment ID encrypted and stored
+INFO: Transaction committed successfully
+2026-02-05 11:32:20 === Verification Ended ===
+
+2026-02-05 10:38:52 === Verification Started ===
+INFO: Received payment: pay_SCQykJyKutrMdm for order: DEMO_1770280171_9176
+INFO: Generated signature: 06ef2e99cdb6abda31a9...
+INFO: Received signature: 06ef2e99cdb6abda31a9...
+INFO: Signature verified successfully
+ERROR: Payment verification failed: Order #DEMO_1770280171_9176 not found
+2026-02-11 08:10:14 === Verification Started ===
+INFO: Received payment: pay_SEleSvbtpXNkQI for order: 95
+INFO: Generated signature: fae493e96b390f7c9b2b...
+INFO: Received signature: fae493e96b390f7c9b2b...
+INFO: Signature verified successfully
+INFO: Updated visa_orders for order #95
+INFO: Inserted payment record #64
+ERROR: Payment verification failed: Encryption key must be 32 bytes (256 bits)
+2026-02-13 11:11:59 === Verification Started ===
+INFO: Received payment: pay_SFbogbRHN02Roa for order: 97
+INFO: Generated signature: d614c7c3f93c178ae667...
+INFO: Received signature: d614c7c3f93c178ae667...
+INFO: Signature verified successfully
+INFO: Updated visa_orders for order #97
+INFO: Inserted payment record #65
+ERROR: Payment verification failed: Encryption key must be 32 bytes (256 bits)

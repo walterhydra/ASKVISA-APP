@@ -1,0 +1,238 @@
+import 'dart:async';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+class WebViewScreen extends StatefulWidget {
+  const WebViewScreen({super.key});
+
+  @override
+  State<WebViewScreen> createState() => _WebViewScreenState();
+}
+
+class _WebViewScreenState extends State<WebViewScreen> {
+  final GlobalKey webViewKey = GlobalKey();
+  InAppWebViewController? webViewController;
+  
+  final String targetUrl = "https://www.askvisa.in"; 
+  
+  bool isConnected = true;
+
+  PullToRefreshController? pullToRefreshController;
+  late StreamSubscription<ConnectivityResult> connectivitySubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkInitialConnectivity();
+    _setupConnectivityListener();
+    _setupFCM();
+    _requestPermissions();
+
+    pullToRefreshController = PullToRefreshController(
+      settings: PullToRefreshSettings(
+        color: Colors.blueAccent,
+      ),
+      onRefresh: () async {
+        if (Platform.isAndroid) {
+          webViewController?.reload();
+        } else if (Platform.isIOS) {
+          final url = await webViewController?.getUrl();
+          if (url != null) {
+            webViewController?.loadUrl(urlRequest: URLRequest(url: url));
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _checkInitialConnectivity() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() => isConnected = false);
+    } else {
+      setState(() => isConnected = true);
+    }
+  }
+
+  void _setupConnectivityListener() {
+    connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      bool connected = result != ConnectivityResult.none;
+      if (connected != isConnected) {
+        setState(() {
+          isConnected = connected;
+          if (isConnected && webViewController != null) {
+            webViewController!.reload();
+          }
+        });
+      }
+    });
+  }
+
+  Future<void> _requestPermissions() async {
+    await [
+      Permission.storage,
+      Permission.camera,
+      Permission.notification,
+    ].request();
+  }
+
+  void _setupFCM() {
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null && message.data.containsKey('url')) {
+        _loadUrlFromNotification(message.data['url']);
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      if (message.data.containsKey('url')) {
+        _loadUrlFromNotification(message.data['url']);
+      }
+    });
+  }
+
+  void _loadUrlFromNotification(String url) {
+    if (webViewController != null) {
+      webViewController!.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        if (webViewController != null && await webViewController!.canGoBack()) {
+          webViewController!.goBack();
+        } else {
+          if (context.mounted) {
+            Navigator.of(context).maybePop();
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: !isConnected
+              ? _buildOfflineUI()
+              : Container(
+                  color: Colors.white,
+                  child: InAppWebView(
+                    key: webViewKey,
+                    initialUrlRequest: URLRequest(url: WebUri(targetUrl)),
+                    pullToRefreshController: pullToRefreshController,
+                    initialSettings: InAppWebViewSettings(
+                      javaScriptEnabled: true,
+                      domStorageEnabled: true,
+                      useShouldOverrideUrlLoading: true,
+                      useOnDownloadStart: true,
+                      allowFileAccessFromFileURLs: true,
+                      allowUniversalAccessFromFileURLs: true,
+                      hardwareAcceleration: true,
+                      useHybridComposition: true,
+                      allowsInlineMediaPlayback: true,
+                      supportZoom: false,
+                      transparentBackground: true,
+                      mixedContentMode: MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+                    ),
+                    onWebViewCreated: (controller) {
+                      webViewController = controller;
+                    },
+                    shouldOverrideUrlLoading: (controller, navigationAction) async {
+                      var uri = navigationAction.request.url;
+
+                      if (uri != null && !["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri, mode: LaunchMode.externalApplication);
+                          return NavigationActionPolicy.CANCEL;
+                        }
+                      }
+                      return NavigationActionPolicy.ALLOW;
+                    },
+                    onLoadStop: (controller, url) async {
+                      pullToRefreshController?.endRefreshing();
+                    },
+                    onProgressChanged: (controller, progress) {
+                      if (progress == 100) {
+                        pullToRefreshController?.endRefreshing();
+                      }
+                    },
+                    onDownloadStartRequest: (controller, downloadStartRequest) async {
+                      var status = await Permission.storage.request();
+                      if (status.isGranted) {
+                        Directory? externalDir;
+                        if (Platform.isAndroid) {
+                          externalDir = await getExternalStorageDirectory();
+                        } else {
+                          externalDir = await getApplicationDocumentsDirectory();
+                        }
+
+                        final savedDir = externalDir?.path;
+                        if (savedDir != null) {
+                          await FlutterDownloader.enqueue(
+                            url: downloadStartRequest.url.toString(),
+                            savedDir: savedDir,
+                            fileName: downloadStartRequest.suggestedFilename,
+                            showNotification: true,
+                            openFileFromNotification: true,
+                            saveInPublicStorage: true,
+                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Download started...")),
+                            );
+                          }
+                        }
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Storage permission denied. Cannot download.")),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOfflineUI() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.wifi_off, size: 80, color: Colors.grey),
+          const SizedBox(height: 20),
+          const Text(
+            "No Internet Connection",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Text("Please check your network and try again."),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              _checkInitialConnectivity();
+            },
+            child: const Text("Retry"),
+          ),
+        ],
+      ),
+    );
+  }
+}

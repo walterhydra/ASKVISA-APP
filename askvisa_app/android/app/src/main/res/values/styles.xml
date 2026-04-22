@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Use standard Android themes to avoid AppCompat dependency errors -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <!-- Set background to pure white -->
+        <item name="android:windowBackground">@android:color/white</item>
+        
+        <!-- For Android 12+ Splash Screen API: suppress the icon -->
+        <!-- These require API 31+, so we use tools:targetApi to avoid lint issues if necessary, 
+             but Android ignores unknown attributes safely. -->
+        <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="android:windowSplashScreenBackground">@android:color/white</item>
+    </style>
+
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>

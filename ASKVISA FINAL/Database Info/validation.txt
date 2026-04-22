@@ -1,0 +1,343 @@
+-- /home/u261509590/domains/askvisa.in/gov_id/2026/01/21/order_22/applicant_1/file_1768987050_697099aa79614.jpeg
+
+-- =====================================================
+-- ========== ADD VALIDATION RULES SUPPORT ==============
+-- =====================================================
+
+-- 1️⃣ Add validation_rules column to country_questions
+ALTER TABLE country_questions
+ADD COLUMN validation_rules JSON NULL AFTER is_required;
+
+-- =====================================================
+-- ========== THAILAND VALIDATION RULES =================
+-- =====================================================
+
+-- First Name & Last Name
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 1,
+  "max_length": 100,
+  "regex": "^[A-Za-z\\\\s\\\'-]+$"
+}'
+WHERE country_id = 1
+  AND field_key IN ('first_name', 'last_name');
+
+-- Passport Number
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 5,
+  "max_length": 20,
+  "regex": "^[A-Z0-9]+$"
+}'
+WHERE country_id = 1
+  AND field_key = 'passport_number';
+
+-- Passport Front & Back Images (Added PDF support)
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "file_types": ["image/jpeg", "image/png", "image/jpg", "application/pdf"],
+  "max_size": 5242880
+}'
+WHERE country_id = 1
+  AND field_key IN ('passport_front', 'passport_back');
+
+-- Passport Issuing Country
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 100
+}'
+WHERE country_id = 1
+  AND field_key = 'passport_country';
+
+-- Passport Issue Date (DD-MM-YYYY format)
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "date_format": "DD-MM-YYYY",
+  "max_date": "TODAY"
+}'
+WHERE country_id = 1
+  AND field_key = 'passport_issue_date';
+
+-- Passport Expiry Date (DD-MM-YYYY format)
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "date_format": "DD-MM-YYYY",
+  "min_date": "TODAY",
+  "min_validity_days": 180
+}'
+WHERE country_id = 1
+  AND field_key = 'passport_expiry_date';
+
+-- Place of Birth
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 100
+}'
+WHERE country_id = 1
+  AND field_key = 'place_of_birth';
+
+-- Date of Birth (DD-MM-YYYY format)
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "date_format": "DD-MM-YYYY",
+  "min_date": "01-01-1900",
+  "max_date": "TODAY"
+}'
+WHERE country_id = 1
+  AND field_key = 'date_of_birth';
+
+-- Gender (Select)
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true
+}'
+WHERE country_id = 1
+  AND field_key = 'gender';
+
+-- Arrival Flight Number
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 3,
+  "max_length": 10,
+  "regex": "^[A-Z0-9]+$"
+}'
+WHERE country_id = 1
+  AND field_key = 'arrival_flight';
+
+-- Arrival Date in Thailand (DD-MM-YYYY format)
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "date_format": "DD-MM-YYYY",
+  "min_date": "TODAY"
+}'
+WHERE country_id = 1
+  AND field_key = 'arrival_date';
+
+-- Hotel Name
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 200
+}'
+WHERE country_id = 1
+  AND field_key = 'hotel_name';
+
+-- Hotel City
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 100
+}'
+WHERE country_id = 1
+  AND field_key = 'hotel_city';
+
+-- =====================================================
+-- ========== ALSO UPDATE EXISTING DATA FORMAT ==========
+-- =====================================================
+
+-- Update existing date answers to DD-MM-YYYY format
+UPDATE applicant_answers aa
+JOIN country_questions cq ON aa.question_id = cq.id
+SET aa.answer_text = DATE_FORMAT(STR_TO_DATE(aa.answer_text, '%Y-%m-%d'), '%d-%m-%Y')
+WHERE cq.field_type = 'date'
+  AND cq.country_id = 1
+  AND aa.answer_text REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}$';
+
+-- =====================================================
+-- ========== VERIFY VALIDATION RULES ===================
+-- =====================================================
+
+SELECT
+    id,
+    field_key,
+    label,
+    field_type,
+    validation_rules,
+    JSON_VALID(validation_rules) as is_valid_json
+FROM country_questions
+WHERE country_id = 1
+ORDER BY sort_order;
+
+-- Verify date format updates
+SELECT 
+    aa.id,
+    cq.field_key,
+    aa.answer_text as formatted_date,
+    STR_TO_DATE(aa.answer_text, '%d-%m-%Y') as parsed_date,
+    DATE_FORMAT(STR_TO_DATE(aa.answer_text, '%d-%m-%Y'), '%d-%m-%Y') as reformatted_date
+FROM applicant_answers aa
+JOIN country_questions cq ON aa.question_id = cq.id
+WHERE cq.field_type = 'date'
+  AND cq.country_id = 1
+LIMIT 10;
+
+
+
+
+old Idea: 
+-- =====================================================
+-- ========== ADD VALIDATION RULES SUPPORT ==============
+-- =====================================================
+
+-- 1️⃣ Add validation_rules column to country_questions
+ALTER TABLE country_questions
+ADD COLUMN validation_rules JSON NULL AFTER field_type;
+
+-- =====================================================
+-- ========== THAILAND VALIDATION RULES =================
+-- =====================================================
+
+-- First Name & Last Name
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 50,
+  "regex": "^[A-Za-z ]+$"
+}'
+WHERE country_id = 1
+  AND field_key IN ('first_name', 'last_name');
+
+-- Passport Number
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 6,
+  "max_length": 15,
+  "regex": "^[A-Z0-9]+$"
+}'
+WHERE country_id = 1
+  AND field_key = 'passport_number';
+
+-- Passport Front & Back Images
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "file_types": ["image/jpeg", "image/png"],
+  "max_size_mb": 5
+}'
+WHERE country_id = 1
+  AND field_key IN ('passport_front', 'passport_back');
+
+-- Passport Issuing Country
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 56
+}'
+WHERE country_id = 1
+  AND field_key = 'passport_country';
+
+-- Passport Issue Date
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "date_before_today": true
+}'
+WHERE country_id = 1
+  AND field_key = 'passport_issue_date';
+
+-- Passport Expiry Date
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "date_after_today": true,
+  "min_validity_months": 6
+}'
+WHERE country_id = 1
+  AND field_key = 'passport_expiry_date';
+
+-- Place of Birth
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 100
+}'
+WHERE country_id = 1
+  AND field_key = 'place_of_birth';
+
+-- Date of Birth
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_age": 0,
+  "max_age": 120
+}'
+WHERE country_id = 1
+  AND field_key = 'date_of_birth';
+
+-- Gender (Select)
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "allowed_values": ["male", "female", "other"]
+}'
+WHERE country_id = 1
+  AND field_key = 'gender';
+
+-- Arrival Flight Number
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "regex": "^[A-Z]{2}[0-9]{1,4}$"
+}'
+WHERE country_id = 1
+  AND field_key = 'arrival_flight';
+
+-- Arrival Date in Thailand
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "date_after_today": true
+}'
+WHERE country_id = 1
+  AND field_key = 'arrival_date';
+
+-- Hotel Name
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 100
+}'
+WHERE country_id = 1
+  AND field_key = 'hotel_name';
+
+-- Hotel City
+UPDATE country_questions
+SET validation_rules = '{
+  "required": true,
+  "min_length": 2,
+  "max_length": 50
+}'
+WHERE country_id = 1
+  AND field_key = 'hotel_city';
+
+-- =====================================================
+-- ========== VERIFY VALIDATION RULES ===================
+-- =====================================================
+
+SELECT
+    id,
+    field_key,
+    field_type,
+    validation_rules
+FROM country_questions
+WHERE country_id = 1
+ORDER BY sort_order;

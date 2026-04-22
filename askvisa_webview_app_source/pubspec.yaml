@@ -1,0 +1,28 @@
+name: askvisa_app
+description: A new Flutter project for ASKVISA WebView app.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_inappwebview: ^6.0.0
+  connectivity_plus: ^5.0.1
+  url_launcher: ^6.2.1
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.10
+  permission_handler: ^11.2.0
+  flutter_downloader: ^1.11.1
+  path_provider: ^2.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
